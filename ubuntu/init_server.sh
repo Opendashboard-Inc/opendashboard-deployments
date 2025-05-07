@@ -11,8 +11,8 @@ echo "Running Certbot setup..."
 echo "Running Node.js and PM2 setup..."
 ./node_pm2_setup.sh
 
-echo "Running Redis setup..."
-./redis_setup.sh
+# echo "Running Redis setup..."
+# ./redis_setup.sh
 
 echo "Running Firewall setup..."
 ./firewall_setup.sh

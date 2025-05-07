@@ -31,6 +31,11 @@ These scripts automate the provisioning of a server, setting up a domain, SSL, a
    ```bash
    ./init_server.sh
    ```
+   **Note**: The `init_server.sh` script does not include Redis setup by default. If you need Redis, run the `redis_setup.sh` script manually:
+   ```bash
+   ./redis_setup.sh
+   ```
+
 8. **Test the server**: Visit the server's IP in a browser. You should see "Welcome to Nginx."
 
 ## Setting Up a Website and Node.js Application
@@ -42,11 +47,11 @@ For detailed instructions on setting up a website and deploying a Node.js applic
 - `nginx_setup.sh`: Installs and configures Nginx.
 - `certbot_setup.sh`: Installs Certbot and sets up SSL certificates.
 - `node_pm2_setup.sh`: Installs Node.js and PM2 for managing Node.js applications.
-- `redis_setup.sh`: Installs and configures Redis.
+- `redis_setup.sh`: Installs and configures Redis (not executed by default in `init_server.sh`).
 - `firewall_setup.sh`: Configures the firewall to allow SSH and Nginx traffic.
 - `setup_domain.sh`: Configures a domain and sets up SSL.
 - `setup_nodejs_app.sh`: Deploys a Node.js application.
-- `init_server.sh`: Runs all the above scripts in sequence.
+- `init_server.sh`: Runs all the above scripts in sequence (except Redis).
 
 If you encounter issues pulling the repository, reset the repository and re-run the `chmod` command:
 ```bash
