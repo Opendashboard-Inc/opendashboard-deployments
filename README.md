@@ -1,4 +1,4 @@
-# deploy-scripts
+# Deployments
 
 This repository contains scripts and workflows to automate the deployment of Node.js-based applications (e.g., React, Next.js, Vite) and includes instructions for provisioning a server, setting up domains, configuring SSL, and setting up CI/CD pipelines.
 
