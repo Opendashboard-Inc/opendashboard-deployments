@@ -9,11 +9,13 @@ The `node-deploy-ssh.yml` workflow is designed to automate the deployment of Nod
 1. **GitHub Repository**: Ensure your application code is hosted in a GitHub repository.
 2. **Remote Server**: A server with SSH access where the application will be deployed.
 3. **Environment Variables**: If your application requires an `.env` file, ensure it is accessible in your repository or a secure location.
-4. **Secrets Configuration**: Add the following secrets to your GitHub repository:
-   - `SSH_HOST`: The hostname or IP address of the remote server.
-   - `SSH_KEY`: The private SSH key for accessing the server.
-   - `SSH_USER`: The username for the SSH connection.
-   - `GH_TOKEN` (optional): A GitHub token for accessing private repositories or files.
+4. **Secrets and Variables Configuration**:
+   - Add the following **secrets** to your GitHub repository or organization:
+     - `SSH_KEY`: The private SSH key for accessing the server.
+     - `SSH_USER`: The username for the SSH connection.
+     - `GH_TOKEN` (optional): A GitHub token for accessing private repositories or files.
+   - Add the following **variable** to your GitHub repository or organization:
+     - `SSH_HOST`: The hostname or IP address of the remote server.
 
 ---
 
@@ -29,68 +31,76 @@ The workflow accepts the following inputs:
 | `RUN_MIGRATION`    | No       | Whether to run database migrations (`true` or `false`).      | `false`       |
 | `RUN_TESTS`        | No       | Whether to run tests before deployment (`true` or `false`).  | `false`       |
 | `EXECUTE_DEPLOYMENT` | No     | Whether to execute the deployment process (`true` or `false`). | `false`       |
+| `REDEPLOY`         | No       | Whether to refresh `.env` and redeploy the application.      | `false`       |
 | `BUILD_DIR_NAME`   | No       | The name of the build directory (e.g., `build`, `out`, `dist`). | `build`       |
+| `SSH_HOST`         | Yes      | The hostname or IP address of the remote server.             | -             |
 
 ---
 
 ## How to Use
 
-1. **Reference the Workflow**:
-   You can reference the workflow directly from the public `opendashboard-deployments` repository. Use the following syntax in your workflow file:
+### Full Deployment
 
-   ```yaml
-   # filepath: .github/workflows/deploy.yml
-   name: Deploy Application
+To perform a full deployment, use the following configuration:
 
-   on:
-     push:
-       branches:
-         - main
+```yaml
+# filepath: .github/workflows/deploy.yml
+name: Deploy Application
 
-   jobs:
-     deploy:
-       uses: Opendashboard-Inc/opendashboard-deployments/.github/workflows/node-deploy-ssh.yml@main
-       with:
-         NAME: "my-app"
-         PROJECT_PATH: "/var/www/my-app"
-         ENV_FILE_PATH: "/configs/contents/env/api.prod.env"
-         RUN_MIGRATION: true
-         RUN_TESTS: true
-         EXECUTE_DEPLOYMENT: true
-         BUILD_DIR_NAME: "build"
-       secrets:
-         SSH_HOST: ${{ secrets.SSH_HOST }}
-         SSH_KEY: ${{ secrets.SSH_KEY }}
-         SSH_USER: ${{ secrets.SSH_USER }}
-         GH_TOKEN: ${{ secrets.GH_TOKEN }}
-   ```
+on:
+  push:
+    branches:
+      - main
 
-   **Note**: The `ENV_FILE_PATH` should be relative to the repository root and follow the format `/repository-name/contents/path/to/env-file`. For example, if the `.env` file is hosted in a repository named `configs` at the path `env/api.prod.env`, the `ENV_FILE_PATH` would be `/configs/contents/env/api.prod.env`.
+jobs:
+  deploy:
+    uses: Opendashboard-Inc/opendashboard-deployments/.github/workflows/node-deploy-ssh.yml@main
+    with:
+      NAME: "my-app"
+      PROJECT_PATH: "/var/www/my-app"
+      ENV_FILE_PATH: "/configs/contents/env/api.prod.env"
+      RUN_MIGRATION: true
+      RUN_TESTS: true
+      EXECUTE_DEPLOYMENT: true
+      BUILD_DIR_NAME: "build"
+      SSH_HOST: "your-server-ip-or-hostname"
+    secrets:
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+```
 
----
+### Redeploy Only
 
-## Deployment Process
+To refresh the `.env` file and redeploy the application without a full deployment, use the following configuration:
 
-- The workflow installs dependencies, builds the application, and compresses the build directory.
-- It transfers the build artifact to the remote server via SCP.
-- On the server, it extracts the artifact, optionally runs migrations and tests, and restarts the application.
+```yaml
+# filepath: .github/workflows/redeploy.yml
+name: Redeploy Application
 
----
+on:
+  workflow_dispatch:
 
-## Supported Frameworks
-
-This workflow supports any Node.js-based application, including:
-- **React**: Ensure the `BUILD_DIR_NAME` is set to `build`.
-- **Next.js**: Ensure the `BUILD_DIR_NAME` is set to `.next`.
-- **Vite**: Ensure the `BUILD_DIR_NAME` is set to `dist`.
+jobs:
+  redeploy:
+    uses: Opendashboard-Inc/opendashboard-deployments/.github/workflows/node-deploy-ssh.yml@main
+    with:
+      PROJECT_PATH: "/var/www/my-app"
+      ENV_FILE_PATH: "/configs/contents/env/api.prod.env"
+      REDEPLOY: true
+      SSH_HOST: "your-server-ip-or-hostname"
+    secrets:
+      SSH_KEY: ${{ secrets.SSH_KEY }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      GH_TOKEN: ${{ secrets.GH_TOKEN }}
+```
 
 ---
 
 ## Notes
 
 - Ensure the remote server has Node.js installed and configured.
-- Customize the `npm run deploy` script in your `package.json` to handle application-specific deployment steps.
-- Use the `RUN_MIGRATION` and `RUN_TESTS` inputs as needed for your application.
-- The CI is configured to pull `.env` files only from repositories owned by the same owner as the repository running the action.
+- Use the `REDEPLOY` option for quick updates to environment variables and application restarts.
+- For full deployments, use the `EXECUTE_DEPLOYMENT` option with other inputs like `RUN_MIGRATION` and `RUN_TESTS`.
 
 For more details, refer to the comments in the `node-deploy-ssh.yml` file.
