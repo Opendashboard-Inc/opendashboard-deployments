@@ -73,8 +73,10 @@ jobs:
           node-version: ${{ matrix.node-version }}
 
       - name: Export GH Token
-        if: ${{ secrets.GH_TOKEN != '' }}
-        run: echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" > ~/.npmrc
+        run: |
+          if [ -n "${{ secrets.GH_TOKEN }}" ]; then
+            echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_TOKEN }}" > ~/.npmrc
+          fi
 
       - name: Install dependencies
         if: ${{ inputs.REDEPLOY != true }}
