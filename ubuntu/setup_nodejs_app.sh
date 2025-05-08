@@ -145,7 +145,7 @@ echo "Building the application..."
 npm run build || { echo "Error: Failed to build the application."; exit 1; }
 
 echo "Starting the application..."
-npm run cluster:start || { echo "Error: Failed to start the application."; exit 1; }
+npm run deploy || { echo "Error: Failed to start the application."; exit 1; }
 
 # Append or update proxy_pass in nginx configuration
 append_or_update_proxy_pass "$nginx_conf" "$portNumber"
