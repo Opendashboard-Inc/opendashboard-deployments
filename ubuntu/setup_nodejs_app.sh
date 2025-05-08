@@ -82,10 +82,6 @@ if [ -z "$branchname" ]; then
     echo "Error: Missing branchname parameter." >&2
     usage
 fi
-if [ -z "$deploy_token" ]; then
-    echo "Error: Missing deploy_token parameter." >&2
-    usage
-fi
 if [ -z "$portNumber" ]; then
     echo "Error: Missing portNumber parameter." >&2
     usage
@@ -108,9 +104,11 @@ sudo mkdir -p /var/www/$domainname/node_root
 # Navigate to the created directory
 cd /var/www/$domainname/node_root || exit
 
-# Add deploy token to repo URL
-if [[ "$repoUrl" != *"@"* ]]; then
-    repoUrl="https://$deploy_token@$repoUrl"
+# Add deploy token to repo URL if provided
+if [ -n "$deploy_token" ]; then
+    if [[ "$repoUrl" != *"@"* ]]; then
+        repoUrl="https://$deploy_token@$repoUrl"
+    fi
 fi
 
 # Add ".git" to repo URL if it doesn't end with it

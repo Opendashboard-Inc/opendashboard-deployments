@@ -48,14 +48,14 @@ cd /opt/deployments/ubuntu
 1. **Run the `setup_nodejs_app.sh` script**:
    Use the `setup_nodejs_app.sh` script to deploy your Node.js application.
    ```bash
-   ./setup_nodejs_app.sh -d yourdomain.com -g your-repo-url -b branch-name -t deploy-token -p port-number [-e /repo-name/contents/path/to/env-file]
+   ./setup_nodejs_app.sh -d yourdomain.com -g your-repo-url -b branch-name -p port-number [-t deploy-token] [-e /repo-name/contents/path/to/env-file]
    ```
    Replace the placeholders with the following:
    - `yourdomain.com`: The domain name for your application.
    - `your-repo-url`: The URL of your Git repository.
    - `branch-name`: The branch to deploy (e.g., `main`).
-   - `deploy-token`: The deploy token for accessing the repository.
    - `port-number`: The port number your application will run on (e.g., `3000`).
+   - `deploy-token` (optional): The deploy token for accessing private repositories.
    - `/repo-name/contents/path/to/env-file` (optional): The path to the `.env` file in a GitHub repository. If provided, it will be fetched automatically.
 
 2. **Verify the Deployment**:
@@ -63,7 +63,7 @@ cd /opt/deployments/ubuntu
    - The script will append or update the `proxy_pass` configuration in the existing Nginx server block.
 
 3. **Environment File**:
-   - If the `.env` file is required, ensure it is hosted in a repository accessible with the provided deploy token.
+   - If the `.env` file is required, ensure it is hosted in a repository accessible with the provided deploy token (if applicable).
    - Use the format `/repo-name/contents/path/to/env-file` for the `-e` option.
 
 4. **Application Logs**:
